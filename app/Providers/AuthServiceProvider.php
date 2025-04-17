@@ -4,8 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-
-class AuthServiceProvider extends ServiceProvider
+use App\Models\Cita;
 {
     /**
      * The policy mappings for the application.
