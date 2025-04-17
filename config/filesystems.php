@@ -46,6 +46,15 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        
+        'imagePaciente' => [
+            'driver' => 'local',
+            'root' => public_path('imagePaciente'),
+            'url' => env('APP_URL').'/imagePaciente',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
 
         's3' => [
             'driver' => 's3',
