@@ -7,6 +7,7 @@ use App\Http\Controllers\MedicoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\HistorialCitasController;
+use App\Http\Controllers\CalendarioCitasController;
 use Illuminate\Support\Facades\Auth;
 
 // Ruta principal
@@ -97,6 +98,12 @@ Route::group(['prefix' => 'citas'], function () {
     // Rutas para historial de citas
     Route::get('/paciente/historial', [HistorialCitasController::class, 'index'])->middleware('auth:admin,recepcionista,paciente,medico')->name('citas.historial');
     Route::get('/paciente/historial/export/{format}', [HistorialCitasController::class, 'export'])->middleware('auth:admin,recepcionista,paciente,medico')->name('citas.historial.export');
+    
+    // Rutas para calendario de citas
+    Route::get('/calendario', [CalendarioCitasController::class, 'index'])->middleware('auth:admin,recepcionista,paciente,medico')->name('citas.calendario');
+    
+    // API para obtener datos del calendario
+    Route::get('/api/citas-calendario', [CalendarioCitasController::class, 'getCitas'])->middleware('auth:admin,recepcionista,paciente,medico')->name('api.citas.calendario');
 });
 
 // Rutas de autenticación
