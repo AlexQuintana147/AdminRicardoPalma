@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             MedicoSeeder::class,
             RecepcionistaSeeder::class,
             CitaSeeder::class,
+            ReportesSeeder::class,
         ]);
     }
 }
