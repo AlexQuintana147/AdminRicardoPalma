@@ -2,98 +2,100 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Http\Requests\StoreAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
-use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $admins = Admin::all();
-        return view('admins.index', compact('admins'));
+        return view('admin.index', compact('admins'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('admins.create');
+        return view('admin.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreAdminRequest $request)
     {
         $data = $request->validated();
-        
+        $data['password'] = Hash::make($data['password']);
+
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('imageAdmin', 'public');
+            $data['foto'] = $request->file('foto')->store('admin-fotos', 'public');
         }
-        
+
         Admin::create($data);
-        
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador creado exitosamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador creado exitosamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Admin $admin)
-    {
-        return view('admins.show', compact('admin'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Admin $admin)
     {
-        return view('admins.edit', compact('admin'));
+        return view('admin.edit', compact('admin'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateAdminRequest $request, Admin $admin)
     {
         $data = $request->validated();
-        
+
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
         if ($request->hasFile('foto')) {
-            // Eliminar la foto anterior si existe
             if ($admin->foto) {
                 Storage::disk('public')->delete($admin->foto);
             }
-            $data['foto'] = $request->file('foto')->store('imageAdmin', 'public');
+            $data['foto'] = $request->file('foto')->store('admin-fotos', 'public');
         }
-        
+
         $admin->update($data);
-        
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador actualizado exitosamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador actualizado exitosamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Admin $admin)
     {
-        // Eliminar la foto si existe
         if ($admin->foto) {
             Storage::disk('public')->delete($admin->foto);
         }
-        
         $admin->delete();
-        
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador eliminado exitosamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador eliminado exitosamente');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('dashboard.admin');
+        }
+
+        return back()->withErrors([
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login.admin');
+    }
+
+    public function dashboard()
+    {
+        return view('admin.dashboard');
     }
 }

@@ -13,6 +13,23 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Rutas de dashboard
+Route::get('/dashboard-admin', function () {
+    return view('dashboard.admin');
+})->middleware('auth:admin')->name('dashboard.admin');
+
+Route::get('/dashboard-medico', function () {
+    return view('dashboard.medico');
+})->middleware('auth:medico')->name('dashboard.medico');
+
+Route::get('/dashboard-recepcionista', function () {
+    return view('dashboard.recepcionista');
+})->middleware('auth:recepcionista')->name('dashboard.recepcionista');
+
+Route::get('/dashboard-paciente', function () {
+    return view('dashboard.paciente');
+})->middleware('auth:paciente')->name('dashboard.paciente');
+
 // Rutas para pacientes
 Route::group(['prefix' => 'pacientes'], function () {
     Route::get('/', [PacienteController::class, 'index'])->middleware('auth:admin,recepcionista');
