@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\HistorialCitasController;
 use App\Http\Controllers\CalendarioCitasController;
+use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Auth;
 
 // Ruta principal
@@ -126,6 +127,14 @@ Route::group(['prefix' => 'auth'], function () {
         Auth::logout();
         return redirect('/');
     })->middleware('auth:admin,recepcionista,paciente,medico')->name('logout');
+});
+
+// Rutas para el perfil de usuario
+Route::group(['prefix' => 'perfil', 'middleware' => 'auth:admin,recepcionista,paciente,medico'], function () {
+    Route::get('/', [PerfilController::class, 'show'])->name('perfil.show');
+    Route::put('/', [PerfilController::class, 'update'])->name('perfil.update');
+    Route::put('/foto', [PerfilController::class, 'updateFoto'])->name('perfil.update.foto');
+    Route::put('/password', [PerfilController::class, 'updatePassword'])->name('perfil.update.password');
 });
 
 // Ruta de registro para pacientes

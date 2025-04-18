@@ -72,6 +72,9 @@
                                         {{ Auth::guard('paciente')->user()->nombre }}
                                     @endif
                                 </span>
+                                <a href="{{ route('perfil.show') }}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                                    Mi Perfil
+                                </a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">
