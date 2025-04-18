@@ -6,6 +6,7 @@ use App\Http\Controllers\RecepcionistaController;
 use App\Http\Controllers\MedicoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\HistorialCitasController;
 use Illuminate\Support\Facades\Auth;
 
 // Ruta principal
@@ -92,6 +93,10 @@ Route::group(['prefix' => 'citas'], function () {
     
     // Rutas para eliminar citas (solo admin)
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->middleware('auth:admin');
+    
+    // Rutas para historial de citas
+    Route::get('/paciente/historial', [HistorialCitasController::class, 'index'])->middleware('auth:admin,recepcionista,paciente,medico')->name('citas.historial');
+    Route::get('/paciente/historial/export/{format}', [HistorialCitasController::class, 'export'])->middleware('auth:admin,recepcionista,paciente,medico')->name('citas.historial.export');
 });
 
 // Rutas de autenticación

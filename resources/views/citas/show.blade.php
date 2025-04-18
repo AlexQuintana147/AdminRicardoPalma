@@ -92,6 +92,98 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Observaciones y Diagnóstico (visible para médicos y cuando existen) -->
+            @if(Auth::guard('medico')->check() || $cita->observaciones || $cita->diagnostico)
+            <div class="md:col-span-2">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Información Clínica</h2>
+                <div class="border-t border-gray-200 pt-2">
+                    @if(Auth::guard('medico')->check() && $cita->estado == 'confirmada')
+                        <form action="{{ route('citas.update', $cita) }}" method="POST" class="space-y-4">
+                            @csrf
+                            @method('PUT')
+                            <div>
+                                <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+                                <textarea id="observaciones" name="observaciones" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">{{ old('observaciones', $cita->observaciones) }}</textarea>
+                            </div>
+                            <div>
+                                <label for="diagnostico" class="block text-sm font-medium text-gray-700 mb-1">Diagnóstico</label>
+                                <textarea id="diagnostico" name="diagnostico" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">{{ old('diagnostico', $cita->diagnostico) }}</textarea>
+                            </div>
+                            <div>
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    Guardar Información Clínica
+                                </button>
+                            </div>
+                        </form>
+                    @else
+                        @if($cita->observaciones)
+                            <div class="py-2">
+                                <span class="block text-gray-500 font-medium mb-1">Observaciones:</span>
+                                <p class="text-gray-800 bg-gray-50 p-3 rounded">{{ $cita->observaciones }}</p>
+                            </div>
+                        @endif
+                        @if($cita->diagnostico)
+                            <div class="py-2 mt-2">
+                                <span class="block text-gray-500 font-medium mb-1">Diagnóstico:</span>
+                                <p class="text-gray-800 bg-gray-50 p-3 rounded">{{ $cita->diagnostico }}</p>
+                            </div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+            @endif
+            
+            <!-- Calificación (solo visible para pacientes y citas completadas) -->
+            @if(Auth::guard('paciente')->check() && $cita->estado == 'asistida')
+            <div class="md:col-span-2">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Calificación de la Atención</h2>
+                <div class="border-t border-gray-200 pt-4">
+                    @if($cita->calificacion)
+                        <div class="flex items-center mb-4">
+                            <span class="text-gray-500 mr-4">Tu calificación:</span>
+                            <div class="flex">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $cita->calificacion)
+                                        <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    @else
+                                        <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    @else
+                        <form action="{{ route('citas.update', $cita) }}" method="POST" class="space-y-4">
+                            @csrf
+                            @method('PUT')
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo calificarías la atención recibida?</label>
+                                <div class="flex space-x-2">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <label class="flex flex-col items-center cursor-pointer">
+                                            <input type="radio" name="calificacion" value="{{ $i }}" class="sr-only peer">
+                                            <svg class="w-8 h-8 text-gray-300 peer-checked:text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <span class="text-sm mt-1">{{ $i }}</span>
+                                        </label>
+                                    @endfor
+                                </div>
+                            </div>
+                            <div>
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    Enviar Calificación
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Acciones disponibles -->
             <div>

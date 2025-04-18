@@ -31,6 +31,9 @@ class Cita extends Model
         'fecha_hora',
         'estado',
         'urgente',
+        'observaciones',
+        'diagnostico',
+        'calificacion',
     ];
 
     /**

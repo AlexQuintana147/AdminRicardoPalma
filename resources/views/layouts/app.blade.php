@@ -51,6 +51,7 @@
                             <a href="{{ url('/medicos') }}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Médicos</a>
                             <a href="{{ url('/citas') }}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Mis Citas</a>
                             <a href="{{ url('/citas/create') }}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Nueva Cita</a>
+                            <a href="{{ route('citas.historial') }}" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Historial</a>
                         @endauth
                     </div>
                 </div>
